@@ -16,9 +16,7 @@ Example with Vue.js (although it is agnostic to JS frameworks).
 
 ```vue
 <template>
-<div v-if="error">
-    Whoops!
-</div>
+<div v-if="error">Whoops!</div>
 <UserList 
     v-else-if="!isUsersPending && users.length > 0"
     :users="users"
@@ -58,11 +56,8 @@ export default {
 
 ```vue
 <template>
-<div v-if="promisedUsers.error">
-    Whoops!
-</div>
+<div v-if="promisedUsers.error">Whoops!</div>
 <UserList v-else-if="!promisedUsers.isEmpty" :users="promisedUsers.value" :pending="promisedUsers.isPending" />
-<div v-else-if="promisedUsers.error">{{ promisedUsers.error }}</div>
 </template>
 
 <script>
