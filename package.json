@@ -3,6 +3,7 @@
   "version": "0.0.2",
   "description": "Manage promise state easily",
   "main": "dist/index.js",
+  "types" : "dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf dist",
     "test": "node japaFile.js",
