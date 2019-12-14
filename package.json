@@ -1,0 +1,22 @@
+{
+  "name": "promistate",
+  "version": "0.0.1",
+  "description": "Manage promise state easily",
+  "main": "dist/index.js",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "test": "node japaFile.js",
+    "compile": "npm run clean && tsc",
+    "prepublish": "npm run compile",
+    "postpublish": "npm run clean"
+  },
+  "author": "Michael Zanggl",
+  "license": "MIT",
+  "devDependencies": {
+    "japa": "^3.0.1",
+    "typescript": "^3.7.3"
+  },
+  "dependencies": {
+    "@types/node": "^12.12.17"
+  }
+}
