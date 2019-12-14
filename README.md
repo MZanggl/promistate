@@ -20,10 +20,9 @@ Example with Vue.js (although it is agnostic to JS frameworks).
     Whoops!
 </div>
 <UserList 
-    v-else
+    v-else-if="!isUsersPending && users.length > 0"
     :users="users"
     :pending="isUsersPending"
-    v-if="!isUsersPending && users.length > 0"
 />
 </template>
 
@@ -62,12 +61,7 @@ export default {
 <div v-if="promisedUsers.error">
     Whoops!
 </div>
-<UserList
-    v-else
-    :users="promisedUsers.value"
-    :pending="promisedUsers.isPending"
-    v-if="!promisedUsers.isEmpty"
-/>
+<UserList v-else-if="!promisedUsers.isEmpty" :users="promisedUsers.value" :pending="promisedUsers.isPending" />
 <div v-else-if="promisedUsers.error">{{ promisedUsers.error }}</div>
 </template>
 
@@ -106,13 +100,13 @@ The method `promistate` accepts two arguments:
 2. configurations
 
 It immediately returns an object that has the following properties
-- load -> a method to initiate the previously passed in callback. Arguments get propogated to callback
-- isEmpty -> If ther is a result. Conveniently switches to false when promise is pending
+- load -> a method to call the previously passed in callback. Arguments get propogated to callback
+- isEmpty -> defines if there is a result. Conveniently switches to false when promise is pending
 - isPending -> defines if promise is currently pending
 - value -> holds the resolved promise result
 - error -> error object in case promise was rejected
 
-Note that promistate does not initiate the callback in any way, use the `load` method.
+Note that promistate does not execute the callback in any way, use the `load` method.
 
 ### Configurations
 
@@ -129,7 +123,7 @@ promistate(async function callback() {
 | key | type | default | use case  |
 | ------------- |-- |:-------------:| -----:|
 | catchErrors  | boolean  | true | you already use something like an ErrorBoundary component for catching errors |
-| defaultValue | any   | null  | You already have the value at hand without loading it in first |
+| defaultValue | any   | null  | You already have the value at hand |
 
 ### Typescript
 
