@@ -4,6 +4,9 @@ function isEmpty<T>(value: T | null) {
     if (Array.isArray(value)) {
         return value.length < 1
     }
+    if (typeof value === 'object' && value !== null) {
+        return Object.keys(<Object>value).length < 1
+    }
 
     return value === undefined || value === null
 }

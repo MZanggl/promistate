@@ -29,7 +29,7 @@ test('can pass values in load function', async (assert) => {
     assert.isNull(state.error)
 })
 
-test('sets empty when response is undefined, null or empty array', async (assert) => {
+test('sets empty when response is undefined, null, empty array or empty object', async (assert) => {
     const state = promistate(async (value) => value)
 
     await state.load(null)
@@ -42,6 +42,10 @@ test('sets empty when response is undefined, null or empty array', async (assert
 
     await state.load([])
     assert.deepEqual(state.value, [])
+    assert.isTrue(state.isEmpty)
+
+    await state.load({})
+    assert.deepEqual(state.value, {})
     assert.isTrue(state.isEmpty)
 })
 

@@ -96,7 +96,7 @@ The method `promistate` accepts two arguments:
 
 It immediately returns an object that has the following properties
 - load -> a method to call the previously passed in callback. Arguments get propogated to callback
-- isEmpty -> defines if there is a result. Conveniently switches to false when promise is pending
+- isEmpty -> defines if there is a result. Conveniently switches to false when promise is pending. isEmpty is true when the result is an empty array, empty object, null or undefined
 - isPending -> defines if promise is currently pending
 - value -> holds the resolved promise result
 - error -> error object in case promise was rejected
