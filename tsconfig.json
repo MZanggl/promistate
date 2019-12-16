@@ -1,15 +1,12 @@
 {
     "compilerOptions": {
-        "lib": ["ES5"],
         "module": "CommonJS",
+        "target": "ES5",
+        "outDir": "./dist",
+        "declaration": true,
         "noImplicitAny": true,
         "removeComments": true,
-        "outDir": "./dist",
         "strictNullChecks": true,
-        "declaration": true,
-        "declarationMap": true,
-        "inlineSourceMap": true,
-        "inlineSources": true,
     },
     "include": [
         "src/**/*"

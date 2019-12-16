@@ -18,9 +18,9 @@ Example with Vue.js (although it is agnostic to JS frameworks).
 <template>
 <div v-if="error">Whoops!</div>
 <UserList 
-    v-else-if="!isUsersPending && users.length > 0"
+    v-else-if="!isPending && users.length > 0"
     :users="users"
-    :pending="isUsersPending"
+    :pending="isPending"
 />
 </template>
 
@@ -29,20 +29,20 @@ export default {
     data() {
         return {
             users: [],
-            isUsersPending: true,
+            isPending: true,
             error: null,
         }
     },
 
     async mounted() {
         const groupId = this.$route.params.groupId
-        this.isUsersPending = true
+        this.isPending = true
         try {
             this.users = await fetch(`/api/${groupId}/users`).then(res => res.json())
         } catch(error) {
             this.error = 'whoops'
         }
-        this.isUsersPending = false
+        this.isPending = false
     }
 }
 </script>

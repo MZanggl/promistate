@@ -1,17 +1,4 @@
-interface Options<T> {
-    catchErrors?: boolean;
-    defaultValue?: T;
-}
-
-type CallbackArgs = any[]
-
-interface State<T> {
-    value: T | null;
-    isPending: boolean;
-    isEmpty: boolean;
-    error: Error | null;
-    load: (...args: CallbackArgs) => Promise<void>;
-}
+import { Options, State, CallbackArgs } from './types'
 
 function isEmpty<T>(value: T | null) {
     if (Array.isArray(value)) {
@@ -49,6 +36,6 @@ function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: O
     }
 }
 
-module.exports = {
+export {
     promistate
 }
