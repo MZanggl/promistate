@@ -1,18 +1,12 @@
 {
     "compilerOptions": {
+        "strict": true,
         "module": "CommonJS",
         "target": "ES5",
         "outDir": "./dist",
         "declaration": true,
-        "noImplicitAny": true,
-        "removeComments": true,
-        "strictNullChecks": true,
     },
     "include": [
         "src/**/*"
-    ],
-    "exclude": [
-        "node_modules",
-        "**/*.spec.ts"
     ]
 }
