@@ -18,6 +18,14 @@ function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: O
         isPending: false,
         isEmpty: isEmpty<T>(defaultValue),
         error: null,
+
+        reset() {
+            this.value = defaultValue
+            this.isPending = false
+            this.isEmpty = isEmpty<T>(defaultValue)
+            this.error = null
+        },
+
         async load(...args: CallbackArgs) {
             this.isPending = true
             this.isEmpty = false

@@ -10,5 +10,6 @@ export interface State<T> {
     isPending: boolean;
     isEmpty: boolean;
     error: Error | null;
+    reset: () => void;
     load: (...args: CallbackArgs) => Promise<void>;
 }

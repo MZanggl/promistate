@@ -56,8 +56,8 @@ export default {
 
 ```vue
 <template>
-<div v-if="promisedUsers.error">Whoops!</div>
-<UserList v-else-if="!promisedUsers.isEmpty" :users="promisedUsers.value" :pending="promisedUsers.isPending" />
+<div v-if="userPromise.error">Whoops!</div>
+<UserList v-else-if="!userPromise.isEmpty" :users="userPromise.value" :pending="userPromise.isPending" />
 </template>
 
 <script>
@@ -65,11 +65,11 @@ import { promistate } from 'promistate'
 
 export default {
     data() {
-        const promisedUsers = promistate(groupId => {
+        const userPromise = promistate(groupId => {
             return fetch(`/api/${groupId}/users`).then(res => res.json())
         })
 
-        return { promisedUsers }
+        return { userPromise }
     },
 
     async mounted() {
@@ -119,6 +119,21 @@ promistate(async function callback() {
 | ------------- |-- |:-------------:| -----:|
 | catchErrors  | boolean  | true | you already use something like an ErrorBoundary component for catching errors |
 | defaultValue | any   | null  | You already have the value at hand |
+
+### reset state to its default values
+
+Sometimes you might need to reset the values in the state(value, error, isEmpty, etc.)
+
+```javascript
+const userPromise = promistate(async () => 1)
+console.log(userPromise.value) // null
+
+await userPromise.load()
+console.log(userPromise.value) // 1
+
+userPromise.reset()
+console.log(userPromise.value) // null
+```
 
 ### Typescript
 

@@ -111,3 +111,20 @@ test('can set default value', async (assert) => {
     assert.equal(state.value, 42)
     assert.isFalse(state.isEmpty)
 })
+
+test('can reset all values', async (assert) => {
+    let state = promistate(async () => 1, { defaultValue: 42 })
+    await state.load()
+    state.reset()
+    
+    assert.equal(state.value, 42)
+    assert.isFalse(state.isEmpty)
+
+    state = promistate(async () => {
+        throw new Error('test')
+    })
+    await state.load()
+    state.reset()
+
+    assert.isNull(state.error)
+})
