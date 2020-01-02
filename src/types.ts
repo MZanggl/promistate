@@ -1,6 +1,13 @@
 export interface Options<T> {
-    catchErrors?: boolean;
-    defaultValue?: T;
+    catchErrors: boolean;
+    defaultValue: T;
+    ignoreLoadWhenPending: boolean;
+}
+
+export enum Status {
+    IGNORED = 'IGNORED',
+    RESOLVED = 'RESOLVED',
+    ERROR = 'ERROR',
 }
 
 export type CallbackArgs = any[]
@@ -11,5 +18,5 @@ export interface State<T> {
     isEmpty: boolean;
     error: Error | null;
     reset: () => void;
-    load: (...args: CallbackArgs) => Promise<void>;
+    load: (...args: CallbackArgs) => Promise<Status>;
 }

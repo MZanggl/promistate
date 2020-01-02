@@ -1,4 +1,4 @@
-import { Options, State, CallbackArgs } from './types'
+import { Options, State, CallbackArgs, Status } from './types'
 
 function isEmpty<T>(value: T | null) {
     if (Array.isArray(value)) {
@@ -11,8 +11,8 @@ function isEmpty<T>(value: T | null) {
     return value === undefined || value === null
 }
 
-function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: Options<T> = {}) : State<T> {
-    const { catchErrors = true, defaultValue = null } = options
+function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: Partial<Options<T>> = {}) : State<T> {
+    const { catchErrors = true, defaultValue = null, ignoreLoadWhenPending = false } = options
     return {
         value: defaultValue,
         isPending: false,
@@ -27,6 +27,10 @@ function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: O
         },
 
         async load(...args: CallbackArgs) {
+            if (ignoreLoadWhenPending && this.isPending) {
+                return Status.IGNORED
+            }
+
             this.isPending = true
             this.isEmpty = false
             this.error = null
@@ -36,17 +40,20 @@ function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: O
                     this.isEmpty = isEmpty<T>(result)
                     this.value = result
                     this.isPending = false
+                    return Status.RESOLVED
                 })
                 .catch((error: Error) => {
                     this.isPending = false
                     this.value = defaultValue
-                    if (!catchErrors) throw error
                     this.error = error
+                    if (!catchErrors) throw error
+                    return Status.ERROR
                 })
         },
     }
 }
 
 export {
-    promistate
+    promistate,
+    Status,
 }

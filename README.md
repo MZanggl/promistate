@@ -101,7 +101,19 @@ It immediately returns an object that has the following properties
 - value -> holds the resolved promise result
 - error -> error object in case promise was rejected
 
-Note that promistate does not execute the callback in any way, use the `load` method.
+Note that calling the method "promistate" does not execute the callback in any way, use the `load` method.
+
+`load` returns a status message about the promise. This can be either
+- RESOLVED
+- ERROR
+- IGNORED (see configurations below)
+
+To avoid hardcoding these, you can import "Status" from the library:
+
+```javascript
+import { promistate, Status } from 'promistate'
+console.log(Status.RESOLVED)
+```
 
 ### Configurations
 
@@ -117,8 +129,9 @@ promistate(async function callback() {
 
 | key | type | default | use case  |
 | ------------- |-- |:-------------:| -----:|
-| catchErrors  | boolean  | true | you already use something like an ErrorBoundary component for catching errors |
-| defaultValue | any   | null  | You already have the value at hand |
+| catchErrors  | boolean  | true | You already use something like an ErrorBoundary component for catching errors |
+| defaultValue | any   | null  | You already have a value at hand, or default it to an empty array, object, etc. |
+| ignoreLoadWhenPending | boolean   | false  | Prevent an event being fired twice when clicking a button. With this boolean set, subsequent loads would be simply ignored (not deferred!) as long as the first promise is resolved. When a subsequent load gets ignored, the "load" method returns the status "IGNORED" |
 
 ### reset state to its default values
 

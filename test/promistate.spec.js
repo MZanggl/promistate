@@ -1,5 +1,5 @@
 const test = require('japa')
-const { promistate } = require('../dist/index')
+const { promistate, Status } = require('../dist/index')
 
 test('can access default properties', (assert) => {
     const state = promistate(async () => 1)
@@ -11,8 +11,9 @@ test('can access default properties', (assert) => {
 
 test('can set value through loading', async (assert) => {
     const state = promistate(async () => 1)
-    await state.load()
+    const status = await state.load()
 
+    assert.equal(status, Status.RESOLVED)
     assert.equal(state.value, 1)
     assert.isFalse(state.isPending)
     assert.isFalse(state.isEmpty)
@@ -59,17 +60,32 @@ test('sets isPending during loading', async (assert) => {
     assert.isFalse(state.isEmpty)
 })
 
+test('does not execute load function when state is still pending', async (assert) => {
+    const state = promistate(value => {
+        return new Promise((resolve) => setTimeout(() => resolve(value), 100))
+    }, { ignoreLoadWhenPending: true })
+
+    const promises = await Promise.all([
+        state.load('load this'),
+        state.load('dont load this'),
+    ])
+
+    assert.equal(state.value, 'load this')
+    assert.deepEqual(promises, [Status.RESOLVED, Status.IGNORED])
+})
+
 test('catches errors', async (assert) => {
     const state = promistate(async () => {
         throw new Error('blub')
     })
 
-    await state.load()
+    const status = await state.load()
 
     assert.equal(state.error.message, 'blub')
     assert.isFalse(state.isPending)
     assert.isFalse(state.isEmpty)
     assert.isNull(state.value)
+    assert.equal(status, Status.ERROR)
 })
 
 test('resets value when crashing', async (assert) => {
@@ -86,7 +102,7 @@ test('resets value when crashing', async (assert) => {
     assert.isNull(state.value)
 })
 
-test('does not catch error when option is set to let it bubble up', async (assert) => {
+test('does throw error when option is set to let it bubble up', async (assert) => {
     assert.plan(5)
 
     const state = promistate(async () => {
@@ -99,7 +115,7 @@ test('does not catch error when option is set to let it bubble up', async (asser
         assert.equal(error.message, 'blub')
     }
 
-    assert.isNull(state.error)
+    assert.equal(state.error.message, 'blub')
     assert.isFalse(state.isPending)
     assert.isFalse(state.isEmpty)
     assert.isNull(state.value)
