@@ -144,3 +144,12 @@ test('can reset all values', async (assert) => {
 
     assert.isNull(state.error)
 })
+
+test('can pass custom isEmpty check', async (assert) => {
+    const state = promistate(async () => ({ items: [1, 2], page: 1 }), {
+        defaultValue: { items: [], page: 1 },
+        isEmpty: value => value.items.length < 1,
+    })
+
+    assert.isTrue(state.isEmpty)
+})

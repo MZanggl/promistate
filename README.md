@@ -132,6 +132,7 @@ promistate(async function callback() {
 | catchErrors  | boolean  | true | You already use something like an ErrorBoundary component for catching errors |
 | defaultValue | any   | null  | You already have a value at hand, or default it to an empty array, object, etc. |
 | ignoreLoadWhenPending | boolean   | false  | Prevent an event being fired twice when clicking a button. With this boolean set, subsequent loads would be simply ignored (not deferred!) as long as the first promise is resolved. When a subsequent load gets ignored, the "load" method returns the status "IGNORED" |
+| isEmpty | Function  | undefined | Say, the result returns something like { page: 1, items: [] }, isEmpty would always return false. `{ isEmpty: value => value.items.length < 1 }` |
 
 ### reset state to its default values
 

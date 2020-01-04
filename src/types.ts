@@ -2,6 +2,7 @@ export interface Options<T> {
     catchErrors: boolean;
     defaultValue: T;
     ignoreLoadWhenPending: boolean;
+    isEmpty<T>(value: T | null): boolean;
 }
 
 export enum Status {

@@ -1,6 +1,6 @@
 import { Options, State, CallbackArgs, Status } from './types'
 
-function isEmpty<T>(value: T | null) {
+function isEmptyDefaultCheck<T>(value: T | null) {
     if (Array.isArray(value)) {
         return value.length < 1
     }
@@ -12,7 +12,13 @@ function isEmpty<T>(value: T | null) {
 }
 
 function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: Partial<Options<T>> = {}) : State<T> {
-    const { catchErrors = true, defaultValue = null, ignoreLoadWhenPending = false } = options
+    const {
+        catchErrors = true,
+        defaultValue = null,
+        ignoreLoadWhenPending = false,
+        isEmpty = isEmptyDefaultCheck,
+    } = options
+
     return {
         value: defaultValue,
         isPending: false,
