@@ -153,3 +153,13 @@ test('can pass custom isEmpty check', async (assert) => {
 
     assert.isTrue(state.isEmpty)
 })
+
+test('can access state in load function', async (assert) => {
+    const state = promistate(async function() {
+        return this.value + 1
+    }, { defaultValue: 1 })
+
+    await state.load()
+
+    assert.equal(state.value, 2)
+})

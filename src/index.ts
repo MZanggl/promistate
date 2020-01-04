@@ -41,7 +41,7 @@ function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: P
             this.isEmpty = false
             this.error = null
 
-            return action(...args)
+            return action.apply(this, args)
                 .then((result: T) => {
                     this.isEmpty = isEmpty<T>(result)
                     this.value = result
