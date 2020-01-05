@@ -22,13 +22,15 @@ function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: P
     return {
         value: defaultValue,
         isPending: false,
-        isEmpty: isEmpty<T>(defaultValue),
         error: null,
+
+        get isEmpty() {
+            return this.isPending ? false : isEmpty(this.value)
+        },
 
         reset() {
             this.value = defaultValue
             this.isPending = false
-            this.isEmpty = isEmpty<T>(defaultValue)
             this.error = null
         },
 
@@ -38,12 +40,10 @@ function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: P
             }
 
             this.isPending = true
-            this.isEmpty = false
             this.error = null
 
             return action.apply(this, args)
                 .then((result: T) => {
-                    this.isEmpty = isEmpty<T>(result)
                     this.value = result
                     this.isPending = false
                     return Status.RESOLVED

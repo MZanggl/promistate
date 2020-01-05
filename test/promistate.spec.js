@@ -83,7 +83,7 @@ test('catches errors', async (assert) => {
 
     assert.equal(state.error.message, 'blub')
     assert.isFalse(state.isPending)
-    assert.isFalse(state.isEmpty)
+    assert.isTrue(state.isEmpty)
     assert.isNull(state.value)
     assert.equal(status, Status.ERROR)
 })
@@ -117,7 +117,7 @@ test('does throw error when option is set to let it bubble up', async (assert) =
 
     assert.equal(state.error.message, 'blub')
     assert.isFalse(state.isPending)
-    assert.isFalse(state.isEmpty)
+    assert.isTrue(state.isEmpty)
     assert.isNull(state.value)
 })
 
@@ -162,4 +162,12 @@ test('can access state in load function', async (assert) => {
     await state.load()
 
     assert.equal(state.value, 2)
+})
+
+test('isEmpty reacts to value changes', async (assert) => {
+    const state = promistate(() => [], { defaultValue: [1] })
+    assert.isFalse(state.isEmpty)
+
+    state.value = []
+    assert.isTrue(state.isEmpty)
 })
