@@ -84,9 +84,13 @@ export default {
 ```javascript
 import { promistate } from 'promistate'
 
-promistate(async function callback() {
-    return somethingAsync()
+const userPromise = promistate(async function callback() {
+    return fetchUser() // any promise
 })
+
+// later...
+await userPromise.load()
+console.log(userPromise.value)
 ```
 
 The method `promistate` accepts two arguments: 
@@ -95,15 +99,20 @@ The method `promistate` accepts two arguments:
 2. configurations
 
 It immediately returns an object that has the following properties
-- load -> a method to call the previously passed in callback. Arguments get propogated to callback
-- isEmpty -> defines if there is a result. Conveniently switches to false when promise is pending. isEmpty is true when the result is an empty array, empty object, null or undefined
-- isPending -> defines if promise is currently pending
-- value -> holds the resolved promise result
-- error -> error object in case promise was rejected
+| field | description |
+| ------------- |-- |
+| load  | A method to call the previously passed in callback. Arguments get propogated to callback |
+| value  | Holds the resolved promise result |
+| isPending  | Defines if promise is currently pending |
+| isEmpty  | Defines if there is a result. Conveniently switches to false when promise is pending. isEmpty is true when the result is an empty array, empty object, null or undefined |
+| error | Error object in case promise was rejected |
+| reset | A method to reset all state (value, isEmpty, error, isPending) |
 
-Note that calling the method "promistate" does not execute the callback in any way, use the `load` method.
+> Note that calling the method "promistate" does not execute the callback in any way, use the `load` method.
 
-`load` returns a status message about the promise. This can be either
+#### load
+
+"load" returns a status message about the promise. This can be either
 - RESOLVED
 - ERROR
 - IGNORED (see configurations below)
@@ -112,7 +121,24 @@ To avoid hardcoding these, you can import "Status" from the library:
 
 ```javascript
 import { promistate, Status } from 'promistate'
-console.log(Status.RESOLVED)
+
+const userPromise = promistate(async function callback() {
+    return fetchUser() // any promise
+})
+
+if (await userPromise.load() === Status.RESOLVED) {
+    console.log(userPromise.value)
+}
+```
+
+Pass in arguments as needed
+
+```javascript
+const userPromise = promistate(async function callback(num1, num2) {
+    return num1 + num2
+})
+
+await userPromise.load(1, 2)
 ```
 
 ### Configurations
@@ -134,21 +160,6 @@ promistate(async function callback() {
 | ignoreLoadWhenPending | boolean   | false  | Prevent an event being fired twice when clicking a button. With this boolean set, subsequent loads would be simply ignored (not deferred!) as long as the first promise is resolved. When a subsequent load gets ignored, the "load" method returns the status "IGNORED" |
 | isEmpty | Function  | undefined | Say, the result returns something like { page: 1, items: [] }, isEmpty would always return false. `{ isEmpty: value => value.items.length < 1 }` |
 
-### reset state to its default values
-
-Sometimes you might need to reset the values in the state(value, error, isEmpty, etc.)
-
-```javascript
-const userPromise = promistate(async () => 1)
-console.log(userPromise.value) // null
-
-await userPromise.load()
-console.log(userPromise.value) // 1
-
-userPromise.reset()
-console.log(userPromise.value) // null
-```
-
 ### Typescript
 
 To type the result of the promise you can make use of generics.
@@ -159,6 +170,24 @@ import { promistate } from 'promistate'
 promistate<string>(async function callback() {
     return 'updated'
 }, { defaultValue: 'initial' })
+```
+
+## FAQ
+
+### an API call returns a page token which I need the next time I make a request to fetch the next page, I also need to append to the previous result
+
+As long as you don't use arrow functions you can access the state using `this`.
+
+```javascript
+import { promistate } from 'promistate'
+
+promistate(async function callback() {
+    const result = await fetchItems(this.pageToken)
+    return { pageToken: result.pageToken, items: this.items.concat(result.items) }
+}, {
+    defaultValue: { items: [], pageToken: null },
+    isEmpty: value => value.items.length < 1,
+})
 ```
 
 ## Meta
