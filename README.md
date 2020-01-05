@@ -99,6 +99,7 @@ The method `promistate` accepts two arguments:
 2. configurations
 
 It immediately returns an object that has the following properties
+
 | field | description |
 | ------------- |-- |
 | load  | A method to call the previously passed in callback. Arguments get propogated to callback |
