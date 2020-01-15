@@ -1,5 +1,5 @@
 const test = require('japa')
-const { promistate, Status } = require('../dist/index')
+const { default: promistate, PromistateStatus } = require('../dist/index')
 
 test('can access default properties', (assert) => {
     const state = promistate(async () => 1)
@@ -13,7 +13,7 @@ test('can set value through loading', async (assert) => {
     const state = promistate(async () => 1)
     const status = await state.load()
 
-    assert.equal(status, Status.RESOLVED)
+    assert.equal(status, PromistateStatus.RESOLVED)
     assert.equal(state.value, 1)
     assert.isFalse(state.isPending)
     assert.isFalse(state.isEmpty)
@@ -71,7 +71,7 @@ test('does not execute load function when state is still pending', async (assert
     ])
 
     assert.equal(state.value, 'load this')
-    assert.deepEqual(promises, [Status.RESOLVED, Status.IGNORED])
+    assert.deepEqual(promises, [PromistateStatus.RESOLVED, PromistateStatus.IGNORED])
 })
 
 test('catches errors', async (assert) => {
@@ -85,7 +85,7 @@ test('catches errors', async (assert) => {
     assert.isFalse(state.isPending)
     assert.isTrue(state.isEmpty)
     assert.isNull(state.value)
-    assert.equal(status, Status.ERROR)
+    assert.equal(status, PromistateStatus.ERROR)
 })
 
 test('resets value when crashing', async (assert) => {

@@ -59,7 +59,8 @@ function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: P
     }
 }
 
+export default promistate
+
 export {
-    promistate,
-    Status,
+    Status as PromistateStatus,
 }

@@ -61,7 +61,7 @@ export default {
 </template>
 
 <script>
-import { promistate } from 'promistate'
+import promistate from 'promistate'
 
 export default {
     data() {
@@ -82,7 +82,7 @@ export default {
 ## API
 
 ```javascript
-import { promistate } from 'promistate'
+import promistate from 'promistate'
 
 const userPromise = promistate(async function callback() {
     return fetchUser() // any promise
@@ -118,10 +118,10 @@ It immediately returns an object that has the following properties
 - ERROR
 - IGNORED (see configurations below)
 
-To avoid hardcoding these, you can import "Status" from the library:
+To avoid hardcoding these, you can import "PromistateStatus" from the library:
 
 ```javascript
-import { promistate, Status } from 'promistate'
+import promistate, { PromistateStatus } from 'promistate'
 
 const userPromise = promistate(async function callback() {
     return fetchUser() // any promise
@@ -147,7 +147,7 @@ await userPromise.load(1, 2)
 Pass configurations as the second argument
 
 ```javascript
-import { promistate } from 'promistate'
+import promistate from 'promistate'
 
 promistate(async function callback() {
     return somethingAsync()
@@ -166,7 +166,7 @@ promistate(async function callback() {
 To type the result of the promise you can make use of generics.
 
 ```typescript
-import { promistate } from 'promistate'
+import promistate from 'promistate'
 
 promistate<string>(async function callback() {
     return 'updated'
@@ -180,7 +180,7 @@ promistate<string>(async function callback() {
 As long as you don't use arrow functions you can access the state using `this`.
 
 ```javascript
-import { promistate } from 'promistate'
+import promistate from 'promistate'
 
 promistate(async function callback() {
     const result = await fetchItems(this.pageToken)
