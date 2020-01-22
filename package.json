@@ -1,6 +1,6 @@
 {
   "name": "promistate",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Manage promise state easily",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,8 +14,8 @@
   "author": "Michael Zanggl",
   "license": "MIT",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/MZanggl/promistate"
+    "type": "git",
+    "url": "https://github.com/MZanggl/promistate"
   },
   "devDependencies": {
     "japa": "^3.0.1",
