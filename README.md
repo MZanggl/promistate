@@ -1,5 +1,7 @@
 # promistate
 
+![logo](logo.png "")
+
 > Manage your promised state swiftly
 
 Eliminating the need to reach for a state management library like vuex when it can be that much simpler.
@@ -17,11 +19,7 @@ Example with Vue.js (although it is agnostic to JS frameworks).
 ```vue
 <template>
 <div v-if="error">Whoops!</div>
-<UserList 
-    v-else-if="!isPending && users.length > 0"
-    :users="users"
-    :pending="isPending"
-/>
+<UserList v-else-if="!isPending && users.length > 0" :users="users" :pending="isPending" />
 </template>
 
 <script>
@@ -127,7 +125,7 @@ const userPromise = promistate(async function callback() {
     return fetchUser() // any promise
 })
 
-if (await userPromise.load() === Status.RESOLVED) {
+if (await userPromise.load() === PromistateStatus.RESOLVED) {
     console.log(userPromise.value)
 }
 ```
@@ -158,8 +156,8 @@ promistate(async function callback() {
 | ------------- |-- |:-------------:| -----:|
 | catchErrors  | boolean  | true | You already use something like an ErrorBoundary component for catching errors |
 | defaultValue | any   | null  | You already have a value at hand, or default it to an empty array, object, etc. |
-| ignoreLoadWhenPending | boolean   | false  | Prevent an event being fired twice when clicking a button. With this boolean set, subsequent loads would be simply ignored (not deferred!) as long as the first promise is resolved. When a subsequent load gets ignored, the "load" method returns the status "IGNORED" |
-| isEmpty | Function  | undefined | Say, the result returns something like { page: 1, items: [] }, isEmpty would always return false. `{ isEmpty: value => value.items.length < 1 }` |
+| ignoreLoadWhenPending | boolean   | false  | Prevent an event being fired twice e.g. when clicking a button. With this boolean set, while the first promise is still pending, subsequent loads would be ignored (not deferred!). When a subsequent load gets ignored, the "load" method returns the status "IGNORED" |
+| isEmpty | Function  | undefined | Say, the result returns something like `{ page: 1, items: [] }`, isEmpty would always return false. Example: `{ isEmpty: value => value.items.length < 1 }` |
 
 ### Typescript
 
@@ -175,7 +173,7 @@ promistate<string>(async function callback() {
 
 ## FAQ
 
-### an API call returns a page token which I need the next time I make a request to fetch the next page, I also need to append to the previous result
+### an API call returns a page token which I need the next time I make a request to fetch the next page, I also need to append the data to the previous result
 
 As long as you don't use arrow functions you can access the state using `this`.
 
