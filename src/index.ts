@@ -1,4 +1,4 @@
-import { Options, State, CallbackArgs, Status } from './types'
+import { CallbackArgs, Callback, Options, Status, State } from './types'
 
 function isEmptyDefaultCheck<T>(value: T | null) {
     if (Array.isArray(value)) {
@@ -11,7 +11,7 @@ function isEmptyDefaultCheck<T>(value: T | null) {
     return value === undefined || value === null
 }
 
-function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: Partial<Options<T>> = {}) : State<T> {
+function promistate<T>(callback: Callback<T>, options: Partial<Options<T>> = {}) : State<T> {
     const {
         catchErrors = true,
         defaultValue = null,
@@ -44,7 +44,7 @@ function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: P
             this.isPending = true
             this.error = null
 
-            return action.apply(this, args)
+            return Promise.resolve(callback.apply(this, args))
                 .then((result: T) => {
                     this.timesSettled = this.timesSettled + 1
                     this.value = result

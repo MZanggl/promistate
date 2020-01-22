@@ -11,6 +11,7 @@ export enum Status {
     ERROR = 'ERROR',
 }
 
+export type Callback<T> = (...args: CallbackArgs) => Promise<T>
 export type CallbackArgs = any[]
 
 export interface State<T> {

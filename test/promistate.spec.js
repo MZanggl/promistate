@@ -172,6 +172,12 @@ test('isEmpty reacts to value changes', async (assert) => {
     assert.isTrue(state.isEmpty)
 })
 
+test('can load using non promises', async (assert) => {
+    const state = promistate(() => 1)
+    await state.load()
+    assert.equal(state.value, 1)
+})
+
 test('updates counter after loading resource', async (assert) => {
     const state = promistate(async () => 1)
     assert.equal(state.timesSettled, 0)
