@@ -20,6 +20,7 @@ function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: P
     } = options
 
     return {
+        timesSettled: 0,
         value: defaultValue,
         isPending: false,
         error: null,
@@ -32,6 +33,7 @@ function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: P
             this.value = defaultValue
             this.isPending = false
             this.error = null
+            this.timesSettled = 0
         },
 
         async load(...args: CallbackArgs) {
@@ -44,11 +46,13 @@ function promistate<T>(action: (...args: CallbackArgs) => Promise<T>, options: P
 
             return action.apply(this, args)
                 .then((result: T) => {
+                    this.timesSettled = this.timesSettled + 1
                     this.value = result
                     this.isPending = false
                     return Status.RESOLVED
                 })
                 .catch((error: Error) => {
+                    this.timesSettled = this.timesSettled + 1
                     this.isPending = false
                     this.value = defaultValue
                     this.error = error

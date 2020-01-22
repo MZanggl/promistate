@@ -14,6 +14,7 @@ export enum Status {
 export type CallbackArgs = any[]
 
 export interface State<T> {
+    timesSettled: number;
     value: T | null;
     isPending: boolean;
     isEmpty: boolean;

@@ -103,6 +103,7 @@ It immediately returns an object that has the following properties
 | load  | A method to call the previously passed in callback. Arguments get propogated to callback |
 | value  | Holds the resolved promise result |
 | isPending  | Defines if promise is currently pending |
+| timesSettled  | counts how many times a promise was settled. Sometimes you maybe want to wait until a promise was settled |
 | isEmpty  | Defines if there is a result. Conveniently switches to false when promise is pending. isEmpty is true when the result is an empty array, empty object, null or undefined |
 | error | Error object in case promise was rejected |
 | reset | A method to reset all state (value, isEmpty, error, isPending) |

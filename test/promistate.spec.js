@@ -165,9 +165,23 @@ test('can access state in load function', async (assert) => {
 })
 
 test('isEmpty reacts to value changes', async (assert) => {
-    const state = promistate(() => [], { defaultValue: [1] })
+    const state = promistate(async () => [], { defaultValue: [1] })
     assert.isFalse(state.isEmpty)
 
     state.value = []
     assert.isTrue(state.isEmpty)
+})
+
+test('updates counter after loading resource', async (assert) => {
+    const state = promistate(async () => 1)
+    assert.equal(state.timesSettled, 0)
+    
+    await state.load()
+    assert.equal(state.timesSettled, 1)
+
+    await state.load()
+    assert.equal(state.timesSettled, 2)
+    
+    state.reset()
+    assert.equal(state.timesSettled, 0)
 })
