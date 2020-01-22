@@ -13,6 +13,10 @@
   },
   "author": "Michael Zanggl",
   "license": "MIT",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/MZanggl/promistate"
+  },
   "devDependencies": {
     "japa": "^3.0.1",
     "typescript": "^3.7.3"

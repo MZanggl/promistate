@@ -1,6 +1,6 @@
 # promistate
 
-![logo](logo.png "")
+![](logo.png "")
 
 > Manage your promised state swiftly
 
