@@ -71,7 +71,7 @@ export default {
     },
 
     async mounted() {
-        this.promisedUsers.load(this.$route.params.groupId)
+        this.userPromise.load(this.$route.params.groupId)
     }
 }
 </script>
@@ -182,7 +182,7 @@ As long as you don't use arrow functions you can access the state using `this`.
 import promistate from 'promistate'
 
 promistate(async function callback() {
-    const result = await fetchItems(this.pageToken)
+    const result = await fetchItems(this.value.pageToken)
     return { pageToken: result.pageToken, items: this.items.concat(result.items) }
 }, {
     defaultValue: { items: [], pageToken: null },
