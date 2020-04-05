@@ -158,7 +158,7 @@ promistate(async function callback() {
 | catchErrors  | boolean  | true | You already use something like an ErrorBoundary component for catching errors |
 | defaultValue | any   | null  | You already have a value at hand, or default it to an empty array, object, etc. |
 | ignoreLoadWhenPending | boolean   | false  | Prevent an event being fired twice e.g. when clicking a button. With this boolean set, while the first promise is still pending, subsequent loads would be ignored (not deferred!). When a subsequent load gets ignored, the "load" method returns the status "IGNORED" |
-| isEmpty | Function  | undefined | Say, the result returns something like `{ page: 1, items: [] }`, isEmpty would always return false. Example: `{ isEmpty: value => value.items.length < 1 }` |
+| isEmpty | Function  | undefined | Say, the result returns something like `{ page: 1, items: [] }`. By default, isEmpty would always return false. Fix it by overriding the isEmpty check: `{ isEmpty: value => value.items.length < 1 }` |
 
 ### Typescript
 
