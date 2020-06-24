@@ -85,12 +85,12 @@ export default {
 import promistate from 'promistate'
 
 const userPromise = promistate(async function callback(id) {
-    return fetch('/api/user/' + id) // any promise
+    return fetch('/api/user/' + id).then(res => res.json()) // any promise
 })
 
 // later...
 await userPromise.load(1)
-console.log(userPromise.value)
+console.log(userPromise.value) // { id: 1, name: '...' }
 ```
 
 The callback passed into `promistate` gets executed once you call the "load" method.
@@ -109,7 +109,7 @@ Calling "promistate()" immediately returns an object that has the following prop
 
 #### load
 
-You can pass in arguments as needed:
+You can pass in arguments as needed
 
 ```javascript
 const calculator = promistate(async function callback(num1, num2) {
@@ -124,9 +124,9 @@ await calculator.load(1, 2)
 - ERROR
 - IGNORED (see configurations below)
 
-> This can be useful if you have to do more work after loading a promise. Note how we there is no need to reach for this in the example at the top.
+> This can be useful if you have to do more work after loading a promise. Note how there is no need to reach for this in the example at the top.
 
-To avoid hardcoding these, you can import "PromistateStatus" from the library:
+To avoid hardcoding these, you can import "PromistateStatus" from the library
 
 ```javascript
 import promistate, { PromistateStatus } from 'promistate'
