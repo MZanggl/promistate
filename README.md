@@ -219,7 +219,7 @@ promise.isEmpty // false
 
 ### Compile project
 
-`npm run compile`
+`npm run build`
 
 ### Run tests
 

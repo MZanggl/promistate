@@ -7,8 +7,8 @@
   "scripts": {
     "clean": "rm -rf dist",
     "test": "node japaFile.js",
-    "compile": "npm run clean && tsc",
-    "prepublish": "npm run compile",
+    "build": "npm run clean && tsc",
+    "prepublish": "npm run build",
     "postpublish": "npm run clean"
   },
   "author": "Michael Zanggl",
