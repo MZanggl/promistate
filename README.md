@@ -16,6 +16,10 @@ Example with Vue.js (although it is agnostic to JS frameworks).
 
 ### Without promistate
 
+- Need to manage promise result, error and pending status all as separate state
+- Need to manage a computed field to determine whether the result is empty or not
+- results in bloated code as all of this is repeated in many components
+
 ```vue
 <template>
 <div v-if="error">Whoops!</div>
@@ -46,11 +50,9 @@ export default {
 </script>
 ```
 
-- Need to manage result, error and pending status all separately
-- Need to manage a computed field to determine whether it's empty or not
-- results in bloated code as logic is repeated in many components
-
 ### With promistate
+
+All under one variable 👍.
 
 ```vue
 <template>
@@ -82,63 +84,58 @@ export default {
 ```javascript
 import promistate from 'promistate'
 
-const userPromise = promistate(async function callback() {
-    return fetchUser() // any promise
+const userPromise = promistate(async function callback(id) {
+    return fetch('/api/user/' + id) // any promise
 })
 
 // later...
-await userPromise.load()
+await userPromise.load(1)
 console.log(userPromise.value)
 ```
 
-The method `promistate` accepts two arguments: 
+The callback passed into `promistate` gets executed once you call the "load" method.
 
-1. A callback
-2. configurations
-
-It immediately returns an object that has the following properties
+Calling "promistate()" immediately returns an object that has the following properties
 
 | field | description |
 | ------------- |-- |
 | load  | A method to call the previously passed in callback. Arguments get propogated to callback |
 | value  | Holds the resolved promise result |
 | isPending  | Defines if promise is currently pending |
-| timesSettled  | counts how many times a promise was settled. Sometimes you maybe want to wait until a promise was settled |
+| timesSettled  | counts how many times a promise was settled. Sometimes you want to wait until a promise was settled |
 | isEmpty  | Defines if there is a result. Conveniently switches to false when promise is pending. isEmpty is true when the result is an empty array, empty object, null or undefined |
 | error | Error object in case promise was rejected |
 | reset | A method to reset all state (value, isEmpty, error, isPending) |
 
-> Note that calling the method "promistate" does not execute the callback in any way, use the `load` method.
-
 #### load
+
+You can pass in arguments as needed:
+
+```javascript
+const calculator = promistate(async function callback(num1, num2) {
+    return num1 + num2
+})
+
+await calculator.load(1, 2)
+```
 
 "load" returns a status message about the promise. This can be either
 - RESOLVED
 - ERROR
 - IGNORED (see configurations below)
 
+> This can be useful if you have to do more work after loading a promise. Note how we there is no need to reach for this in the example at the top.
+
 To avoid hardcoding these, you can import "PromistateStatus" from the library:
 
 ```javascript
 import promistate, { PromistateStatus } from 'promistate'
 
-const userPromise = promistate(async function callback() {
-    return fetchUser() // any promise
-})
+const userPromise = promistate(() => fetch('...'))
 
 if (await userPromise.load() === PromistateStatus.RESOLVED) {
-    console.log(userPromise.value)
+    console.log("It's resolved!", userPromise.value)
 }
-```
-
-Pass in arguments as needed
-
-```javascript
-const userPromise = promistate(async function callback(num1, num2) {
-    return num1 + num2
-})
-
-await userPromise.load(1, 2)
 ```
 
 ### Configurations
@@ -156,9 +153,9 @@ promistate(async function callback() {
 | key | type | default | use case  |
 | ------------- |-- |:-------------:| -----:|
 | catchErrors  | boolean  | true | You already use something like an ErrorBoundary component for catching errors |
-| defaultValue | any   | null  | You already have a value at hand, or default it to an empty array, object, etc. |
+| defaultValue | any   | null  | You already have a value at hand, or want to default it to an empty array, object, etc. |
 | ignoreLoadWhenPending | boolean   | false  | Prevent an event being fired twice e.g. when clicking a button. With this boolean set, while the first promise is still pending, subsequent loads would be ignored (not deferred!). When a subsequent load gets ignored, the "load" method returns the status "IGNORED" |
-| isEmpty | Function  | undefined | Say, the result returns something like `{ page: 1, items: [] }`, isEmpty would always return false. Example: `{ isEmpty: value => value.items.length < 1 }` |
+| isEmpty | Function  | undefined | Say, the result is `{ page: 1, items: [] }`, the default "isEmpty" would always evaluate to false since a filled object is considered not empty. You can tweak the check like this: `{ isEmpty: value => value.items.length < 1 }` |
 
 ### Typescript
 
@@ -188,6 +185,24 @@ promistate(async function callback() {
     defaultValue: { items: [], pageToken: null },
     isEmpty: value => value.items.length < 1,
 })
+```
+
+### I need to manually change the value of a promise
+
+Often times you want to reset the promise to its initial state. For this you can use the "reset" method.
+
+But of course you can still mutate the value directly.
+
+```javascript
+import promistate from 'promistate'
+
+const promise = promistate(() => fetch('...'))
+
+promise.value // null
+promise.isEmpty // true
+
+promise.value = 2
+promise.isEmpty // false
 ```
 
 ## Meta
