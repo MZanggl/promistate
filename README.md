@@ -171,6 +171,16 @@ promistate<string>(async function callback() {
 
 ## FAQ
 
+### Is this exclusive to Vue?
+
+Nope. [Here](https://codesandbox.io/s/recursing-ritchie-kbutq?file=/src/index.js) is an example for [Alpine.js](https://github.com/alpinejs/alpine).
+
+For React, you need to wrap promistate in a custom hook.
+
+### Can I use this for POST/PUT/DELETE requests as well?
+
+Absolutely.
+
 ### an API call returns a page token which I need the next time I make a request to fetch the next page, I also need to append the data to the previous result
 
 As long as you don't use arrow functions you can access the state using `this`.
