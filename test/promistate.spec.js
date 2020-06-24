@@ -4,6 +4,7 @@ const { default: promistate, PromistateStatus } = require('../dist/index')
 test('can access default properties', (assert) => {
     const state = promistate(async () => 1)
     assert.isFalse(state.isPending)
+    assert.isFalse(state.isDelayOver)
     assert.isTrue(state.isEmpty)
     assert.isNull(state.value)
     assert.isNull(state.error)
@@ -16,6 +17,7 @@ test('can set value through loading', async (assert) => {
     assert.equal(status, PromistateStatus.RESOLVED)
     assert.equal(state.value, 1)
     assert.isFalse(state.isPending)
+    assert.isFalse(state.isDelayOver)
     assert.isFalse(state.isEmpty)
     assert.isNull(state.error)
 })
@@ -83,6 +85,7 @@ test('catches errors', async (assert) => {
 
     assert.equal(state.error.message, 'blub')
     assert.isFalse(state.isPending)
+    assert.isFalse(state.isDelayOver)
     assert.isTrue(state.isEmpty)
     assert.isNull(state.value)
     assert.equal(status, PromistateStatus.ERROR)
@@ -103,7 +106,7 @@ test('resets value when crashing', async (assert) => {
 })
 
 test('does throw error when option is set to let it bubble up', async (assert) => {
-    assert.plan(5)
+    assert.plan(6)
 
     const state = promistate(async () => {
         throw new Error('blub')
@@ -117,6 +120,7 @@ test('does throw error when option is set to let it bubble up', async (assert) =
 
     assert.equal(state.error.message, 'blub')
     assert.isFalse(state.isPending)
+    assert.isFalse(state.isDelayOver)
     assert.isTrue(state.isEmpty)
     assert.isNull(state.value)
 })
@@ -190,4 +194,28 @@ test('updates counter after loading resource', async (assert) => {
     
     state.reset()
     assert.equal(state.timesSettled, 0)
+})
+
+test('sets isDelayOver when value is pending more than set delay time', async (assert) => {
+    assert.plan(2)
+    const state = promistate(() => {
+        return new Promise((resolve) => setTimeout(resolve, 100))
+    }, { delay: 50})
+
+    const promise = state.load()
+    assert.isFalse(state.isDelayOver)
+    setTimeout(() => {
+        assert.isTrue(state.isDelayOver)
+    }, 51)
+
+    return promise
+})
+
+test('immediately sets isDelayOver to true when set delay is 0', async (assert) => {
+    const state = promistate(() => {
+        return new Promise((resolve) => setTimeout(resolve, 30))
+    }, { delay: 0})
+
+    state.load()
+    assert.isTrue(state.isDelayOver)
 })

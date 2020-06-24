@@ -3,6 +3,7 @@ export interface Options<T> {
     defaultValue: T;
     ignoreLoadWhenPending: boolean;
     isEmpty<T>(value: T | null): boolean;
+    delay: number;
 }
 
 export enum Status {
@@ -19,6 +20,7 @@ export interface State<T> {
     value: T | null;
     isPending: boolean;
     isEmpty: boolean;
+    isDelayOver: boolean;
     error: Error | null;
     reset: () => void;
     load: (...args: CallbackArgs) => Promise<Status>;

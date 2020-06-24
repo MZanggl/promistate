@@ -17,12 +17,14 @@ function promistate<T>(callback: Callback<T>, options: Partial<Options<T>> = {})
         defaultValue = null,
         ignoreLoadWhenPending = false,
         isEmpty = isEmptyDefaultCheck,
+        delay = 200
     } = options
 
     return {
         timesSettled: 0,
         value: defaultValue,
         isPending: false,
+        isDelayOver: false,
         error: null,
 
         get isEmpty() {
@@ -32,6 +34,7 @@ function promistate<T>(callback: Callback<T>, options: Partial<Options<T>> = {})
         reset() {
             this.value = defaultValue
             this.isPending = false
+            this.isDelayOver = false
             this.error = null
             this.timesSettled = 0
         },
@@ -41,19 +44,28 @@ function promistate<T>(callback: Callback<T>, options: Partial<Options<T>> = {})
                 return Status.IGNORED
             }
 
+            this.isDelayOver = !delay
             this.isPending = true
             this.error = null
+
+            if (delay) {
+                setTimeout(() => {
+                    if (this.isPending) this.isDelayOver = true
+                }, delay)
+            }
 
             return Promise.resolve(callback.apply(this, args))
                 .then((result: T) => {
                     this.timesSettled = this.timesSettled + 1
                     this.value = result
                     this.isPending = false
+                    this.isDelayOver = false
                     return Status.RESOLVED
                 })
                 .catch((error: Error) => {
                     this.timesSettled = this.timesSettled + 1
                     this.isPending = false
+                    this.isDelayOver = false
                     this.value = defaultValue
                     this.error = error
                     if (!catchErrors) throw error
