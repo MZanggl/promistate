@@ -154,6 +154,7 @@ promistate(async function callback() {
 | ------------- |-- |:-------------:| -----:|
 | catchErrors  | boolean  | true | You already use something like an ErrorBoundary component for catching errors |
 | defaultValue | any   | null  | You already have a value at hand, or want to default it to an empty array, object, etc. |
+| ignoreStaleLoad | boolean   | false  | If you "load" while there is already a promise pending, this will ignore any stale promise results. By calling "reset" you can also cancel promises this way. |
 | ignoreLoadWhenPending | boolean   | false  | Prevent an event being fired twice e.g. when clicking a button. With this boolean set, while the first promise is still pending, subsequent loads would be ignored (not deferred!). When a subsequent load gets ignored, the "load" method returns the status "IGNORED" |
 | isEmpty | Function  | undefined | Say, the result is `{ page: 1, items: [] }`, the default "isEmpty" would always evaluate to false since a filled object is considered not empty. You can tweak the check like this: `{ isEmpty: value => value.items.length < 1 }` |
 

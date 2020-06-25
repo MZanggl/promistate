@@ -191,3 +191,16 @@ test('updates counter after loading resource', async (assert) => {
     state.reset()
     assert.equal(state.timesSettled, 0)
 })
+
+test('automatically cancels return of promise value when another promise was initiated', async assert => {
+    const state = promistate((val, wait) => {
+        return new Promise((resolve) => setTimeout(() => resolve(val), wait))
+    }, { ignoreStaleLoad: true })
+
+    const promise = state.load(1, 50)
+    state.reset()
+    await state.load(2, 10)
+    await promise
+
+    assert.equal(state.value, 2)
+})
