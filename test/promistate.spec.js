@@ -204,3 +204,19 @@ test('automatically cancels return of promise value when another promise was ini
 
     assert.equal(state.value, 2)
 })
+
+test('can register listener when state changes', async assert => {
+    let counter = 0
+    const state = promistate(action => action, {
+        listen: () => counter++
+    })
+
+    await state.load(() => '')
+    assert.equal(counter, 2)
+    counter = 0
+    state.reset()
+    assert.equal(counter, 1)
+    counter = 0
+    await state.load(() => { throw new Error('asfd') })
+    assert.equal(counter, 2)
+})

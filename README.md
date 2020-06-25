@@ -79,6 +79,12 @@ export default {
 </script>
 ```
 
+## More examples
+
+- [Vue.js](https://codesandbox.io/s/vue-promistate-0nrjz?file=/src/App.vue)
+- [Alpine.js](https://codesandbox.io/s/recursing-ritchie-kbutq?file=/src/index.js)
+- [Svelte](https://codesandbox.io/s/promistate-svelte-h86ll?file=/App.svelte)
+
 ## API
 
 ```javascript
@@ -157,6 +163,7 @@ promistate(async function callback() {
 | ignoreStaleLoad | boolean   | false  | If you "load" while there is already a promise pending, this will ignore any stale promise results. By calling "reset" you can also cancel promises this way. |
 | ignoreLoadWhenPending | boolean   | false  | Prevent an event being fired twice e.g. when clicking a button. With this boolean set, while the first promise is still pending, subsequent loads would be ignored (not deferred!). When a subsequent load gets ignored, the "load" method returns the status "IGNORED" |
 | isEmpty | Function  | undefined | Say, the result is `{ page: 1, items: [] }`, the default "isEmpty" would always evaluate to false since a filled object is considered not empty. You can tweak the check like this: `{ isEmpty: value => value.items.length < 1 }` |
+| listen | Function | undefined | Callback for whenever the state changes. Useful for integrations in libraries like svelte, react, etc. |
 
 ### Typescript
 
@@ -171,12 +178,6 @@ promistate<string>(async function callback() {
 ```
 
 ## FAQ
-
-### Is this exclusive to Vue?
-
-Nope. [Here](https://codesandbox.io/s/recursing-ritchie-kbutq?file=/src/index.js) is an example for [Alpine.js](https://github.com/alpinejs/alpine).
-
-For React, you need to wrap promistate in a custom hook.
 
 ### Can I use this for POST/PUT/DELETE requests as well?
 

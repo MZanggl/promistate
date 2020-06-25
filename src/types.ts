@@ -4,6 +4,7 @@ export interface Options<T> {
     ignoreLoadWhenPending?: boolean;
     isEmpty?<T>(value: T | null): boolean;
     ignoreStaleLoad?: boolean;
+    listen?(): void;
 }
 
 export enum Status {
