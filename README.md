@@ -79,6 +79,11 @@ export default {
 </script>
 ```
 
+## More examples
+
+- [Vue.js](https://codesandbox.io/s/vue-promistate-0nrjz?file=/src/App.vue)
+- [Alpine.js](https://codesandbox.io/s/recursing-ritchie-kbutq?file=/src/index.js)
+
 ## API
 
 ```javascript
@@ -154,6 +159,7 @@ promistate(async function callback() {
 | ------------- |-- |:-------------:| -----:|
 | catchErrors  | boolean  | true | You already use something like an ErrorBoundary component for catching errors |
 | defaultValue | any   | null  | You already have a value at hand, or want to default it to an empty array, object, etc. |
+| ignoreStaleLoad | boolean   | false  | If you "load" while there is already a promise pending, this will ignore any stale promise results. By calling "reset" you can also cancel promises this way. |
 | ignoreLoadWhenPending | boolean   | false  | Prevent an event being fired twice e.g. when clicking a button. With this boolean set, while the first promise is still pending, subsequent loads would be ignored (not deferred!). When a subsequent load gets ignored, the "load" method returns the status "IGNORED" |
 | isEmpty | Function  | undefined | Say, the result is `{ page: 1, items: [] }`, the default "isEmpty" would always evaluate to false since a filled object is considered not empty. You can tweak the check like this: `{ isEmpty: value => value.items.length < 1 }` |
 
@@ -170,12 +176,6 @@ promistate<string>(async function callback() {
 ```
 
 ## FAQ
-
-### Is this exclusive to Vue?
-
-Nope. [Here](https://codesandbox.io/s/recursing-ritchie-kbutq?file=/src/index.js) is an example for [Alpine.js](https://github.com/alpinejs/alpine).
-
-For React, you need to wrap promistate in a custom hook.
 
 ### Can I use this for POST/PUT/DELETE requests as well?
 

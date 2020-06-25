@@ -1,4 +1,4 @@
-import { CallbackArgs, Callback, Options, Status, State } from './types'
+import { CallbackArgs, Callback, Options, Status, Result } from './types'
 
 function isEmptyDefaultCheck<T>(value: T | null) {
     if (Array.isArray(value)) {
@@ -11,15 +11,17 @@ function isEmptyDefaultCheck<T>(value: T | null) {
     return value === undefined || value === null
 }
 
-function promistate<T>(callback: Callback<T>, options: Partial<Options<T>> = {}) : State<T> {
+function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result<T> {
     const {
         catchErrors = true,
         defaultValue = null,
         ignoreLoadWhenPending = false,
         isEmpty = isEmptyDefaultCheck,
+        ignoreStaleLoad = false,
     } = options
 
     return {
+        timesInitiated: 0,
         timesSettled: 0,
         value: defaultValue,
         isPending: false,
@@ -34,6 +36,7 @@ function promistate<T>(callback: Callback<T>, options: Partial<Options<T>> = {})
             this.isPending = false
             this.error = null
             this.timesSettled = 0
+            this.timesInitiated++
         },
 
         async load(...args: CallbackArgs) {
@@ -41,18 +44,26 @@ function promistate<T>(callback: Callback<T>, options: Partial<Options<T>> = {})
                 return Status.IGNORED
             }
 
+            const timesInitiated = this.timesInitiated + 1
+            this.timesInitiated = timesInitiated
             this.isPending = true
             this.error = null
 
             return Promise.resolve(callback.apply(this, args))
                 .then((result: T) => {
+                    if (ignoreStaleLoad && this.timesInitiated !== timesInitiated) {
+                        return Status.IGNORED
+                    }
                     this.timesSettled = this.timesSettled + 1
                     this.value = result
                     this.isPending = false
                     return Status.RESOLVED
                 })
                 .catch((error: Error) => {
-                    this.timesSettled = this.timesSettled + 1
+                    if (ignoreStaleLoad && this.timesInitiated !== timesInitiated) {
+                        return Status.IGNORED
+                    }
+                    this.timesSettled++
                     this.isPending = false
                     this.value = defaultValue
                     this.error = error
@@ -67,4 +78,6 @@ export default promistate
 
 export {
     Status as PromistateStatus,
+    Result as PromistateResult,
+    Options as PromistateOptions,
 }
