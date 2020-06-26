@@ -15,6 +15,7 @@ Easily manage promises in reactive JavaScript libraries and frameworks such as R
 - [Alpine.js](https://codesandbox.io/s/recursing-ritchie-kbutq?file=/src/index.js)
 - [Svelte](https://codesandbox.io/s/promistate-svelte-h86ll?file=/App.svelte)
 - [Angular](https://codesandbox.io/s/angular-promistate-xf2j5?file=/src/app/app.component.html)
+- [Vanilla JS](https://codesandbox.io/s/vanilla-promistate-vdyd3?file=/src/index.js)
 
 ## Comparison (example with Vue.js)
 
@@ -62,9 +63,6 @@ export default {
 
 All under one variable 👍.
 
-<details>
-<summary>Click to toggle</summary>
-
 ```vue
 <template>
 <div v-if="userPromise.error">Whoops!</div>
@@ -89,9 +87,10 @@ export default {
 }
 </script>
 ```
-</details>
 
 ## API
+
+(See below for react hook example)
 
 ```javascript
 import promistate from 'promistate'
@@ -101,6 +100,7 @@ const userPromise = promistate(async function callback(id) {
 })
 
 // later...
+console.log(userPromise.value) // null
 await userPromise.load(1)
 console.log(userPromise.value) // { id: 1, name: '...' }
 ```
@@ -239,6 +239,16 @@ promise.isEmpty // true
 
 promise.value = 2
 promise.isEmpty // false
+```
+
+If you use the react hook, do it like this instead:
+
+```javascript
+import { usePromistate } from 'promistate/lib/react'
+
+const [promise, actions] = usePromistate(() => fetch('...'))
+
+actions.setValue(2)
 ```
 
 ## Meta
