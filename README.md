@@ -2,23 +2,30 @@
 
 ![](logo.png "")
 
-> Manage your promised state swiftly
-
-Eliminating the need to reach for a state management library like vuex when it can be that much simpler.
+Easily manage promises in reactive JavaScript libraries and frameworks such as React.js, Vue.js, Angular, Svelte, Alpine.js, etc.
 
 ## Installation
 
 > `npm i promistate`
 
-## Example
+## Examples
 
-Example with Vue.js (although it is agnostic to JS frameworks).
+- [Vue.js](https://codesandbox.io/s/vue-promistate-0nrjz?file=/src/App.vue)
+- [React.js](https://codesandbox.io/s/react-promistate-pjnzh?file=/src/App.js)
+- [Alpine.js](https://codesandbox.io/s/recursing-ritchie-kbutq?file=/src/index.js)
+- [Svelte](https://codesandbox.io/s/promistate-svelte-h86ll?file=/App.svelte)
+- [Angular](https://codesandbox.io/s/angular-promistate-xf2j5?file=/src/app/app.component.html)
+
+## Comparison (example with Vue.js)
 
 ### Without promistate
 
 - Need to manage promise result, error and pending status all as separate state
 - Need to manage a computed field to determine whether the result is empty or not
 - results in bloated code as all of this is repeated in many components
+
+<details>
+<summary>Click to toggle</summary>
 
 ```vue
 <template>
@@ -49,10 +56,14 @@ export default {
 }
 </script>
 ```
+</details>
 
 ### With promistate
 
 All under one variable 👍.
+
+<details>
+<summary>Click to toggle</summary>
 
 ```vue
 <template>
@@ -78,13 +89,7 @@ export default {
 }
 </script>
 ```
-
-## More examples
-
-- [Vue.js](https://codesandbox.io/s/vue-promistate-0nrjz?file=/src/App.vue)
-- [Alpine.js](https://codesandbox.io/s/recursing-ritchie-kbutq?file=/src/index.js)
-- [Svelte](https://codesandbox.io/s/promistate-svelte-h86ll?file=/App.svelte)
-- [Angular](https://codesandbox.io/s/angular-promistate-xf2j5?file=/src/app/app.component.html)
+</details>
 
 ## API
 
@@ -165,6 +170,24 @@ promistate(async function callback() {
 | ignoreLoadWhenPending | boolean   | false  | Prevent an event being fired twice e.g. when clicking a button. With this boolean set, while the first promise is still pending, subsequent loads would be ignored (not deferred!). When a subsequent load gets ignored, the "load" method returns the status "IGNORED" |
 | isEmpty | Function  | undefined | Say, the result is `{ page: 1, items: [] }`, the default "isEmpty" would always evaluate to false since a filled object is considered not empty. You can tweak the check like this: `{ isEmpty: value => value.items.length < 1 }` |
 | listen | Function | undefined | Listen to any state changes. Useful for integrations in libraries like Svelte or React.js | 
+
+### usage with React.js
+
+Usage with react differs in two ways
+
+1. Import `usePromistate` from `promistate/lib/react`
+2. `usePromistate` returns a tuple with the first value holding the state, and the second value holding all methods to update the state
+
+```javascript
+import React from "react";
+import { usePromistate } from "promistate/lib/react";
+
+export default function App() {
+  const [todosPromise, todoActions] = usePromistate(somePromise);
+  // todosPromise.value, todosPromise.isPending, ...
+  // todoActions.load(), todoActions.reset(), todoActions.setValue('new Value')
+}
+```
 
 ### Typescript
 
