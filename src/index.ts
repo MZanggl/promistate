@@ -24,16 +24,26 @@ function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result
     return {
         timesInitiated: 0,
         timesSettled: 0,
-        value: defaultValue,
+        _value: defaultValue,
         isPending: false,
         error: null,
 
+        get value() {
+            return this._value
+        },
+
+        set value(value: T | null) {
+            this._value = value
+            this.timesInitiated++
+            listen && listen()
+        },
+
         get isEmpty() {
-            return this.isPending ? false : isEmpty(this.value)
+            return this.isPending ? false : isEmpty(this._value)
         },
 
         reset() {
-            this.value = defaultValue
+            this._value = defaultValue
             this.isPending = false
             this.error = null
             this.timesSettled = 0
@@ -58,7 +68,7 @@ function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result
                         return Status.IGNORED
                     }
                     this.timesSettled = this.timesSettled + 1
-                    this.value = result
+                    this._value = result
                     this.isPending = false
                     listen && listen()
                     return Status.RESOLVED
@@ -69,7 +79,7 @@ function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result
                     }
                     this.timesSettled++
                     this.isPending = false
-                    this.value = defaultValue
+                    this._value = defaultValue
                     this.error = error
                     listen && listen()
                     if (!catchErrors) throw error

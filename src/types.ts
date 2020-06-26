@@ -20,6 +20,7 @@ export interface Result<T> {
     timesInitiated: number;
     timesSettled: number;
     value: T | null;
+    _value: T | null;
     isPending: boolean;
     isEmpty: boolean;
     error: Error | null;
