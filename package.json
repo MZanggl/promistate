@@ -2,14 +2,14 @@
   "name": "promistate",
   "version": "1.4.0",
   "description": "Manage promise state easily",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "clean": "rm -rf dist",
     "test": "node japaFile.js",
-    "build": "npm run clean && tsc",
-    "prepublish": "npm run build",
-    "postpublish": "npm run clean"
+    "copymeta": "cp README.md package.json dist",
+    "build": "npm run clean && tsc && npm run copymeta",
+    "publish:dist": "npm run build && cd dist && npm publish"
   },
   "author": "Michael Zanggl",
   "license": "MIT",
