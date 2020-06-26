@@ -84,6 +84,7 @@ export default {
 - [Vue.js](https://codesandbox.io/s/vue-promistate-0nrjz?file=/src/App.vue)
 - [Alpine.js](https://codesandbox.io/s/recursing-ritchie-kbutq?file=/src/index.js)
 - [Svelte](https://codesandbox.io/s/promistate-svelte-h86ll?file=/App.svelte)
+- [Angular](https://codesandbox.io/s/angular-promistate-xf2j5?file=/src/app/app.component.html)
 
 ## API
 
