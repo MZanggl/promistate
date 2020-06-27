@@ -23,65 +23,56 @@ Easily manage promises in reactive JavaScript libraries and frameworks such as R
 
 - Need to manage promise result, error and pending status all as separate state
 - Need to manage a computed field to determine whether the result is empty or not
+- Need to write custom logic to ignore stale promises / cancel promises
 - results in bloated code as all of this is repeated in many components
-
-<details>
-<summary>Click to toggle</summary>
 
 ```vue
 <template>
-<div v-if="error">Whoops!</div>
-<UserList v-else-if="!isPending && users.length > 0" :users="users" :pending="isPending" />
+    <div v-if="error">Whoops!</div>
+    <div v-else-if="isPending">loading...</div>
+    <div v-else-if="users.length === 0">no results...</div>
+    <UserList v-else :users="users" />
 </template>
 
 <script>
 export default {
     data() {
-        return {
-            users: [],
-            isPending: true,
-            error: null,
-        }
+        return { users: [], isPending: true, error: null }
     },
-
-    async mounted() {
+    async created() {
         const groupId = this.$route.params.groupId
         this.isPending = true
         try {
             this.users = await fetch(`/api/${groupId}/users`).then(res => res.json())
         } catch(error) {
-            this.error = 'whoops'
+            this.error = error
         }
         this.isPending = false
     }
 }
 </script>
 ```
-</details>
 
 ### With promistate
 
-All under one variable 👍.
+All state changes handled internally and exposed through a single object 👍.
 
 ```vue
 <template>
-<div v-if="userPromise.error">Whoops!</div>
-<UserList v-else-if="!userPromise.isEmpty" :users="userPromise.value" :pending="userPromise.isPending" />
+    <div v-if="userPromise.error">Whoops!</div>
+    <div v-else-if="userPromise.isPending">loading...</div>
+    <div v-else-if="userPromise.isEmpty">no results...</div>
+    <UserList v-else :users="userPromise.value" />
 </template>
 
 <script>
 import promistate from 'promistate'
 
 export default {
-    data() {
-        const userPromise = promistate(groupId => {
-            return fetch(`/api/${groupId}/users`).then(res => res.json())
-        })
-
-        return { userPromise }
-    },
-
-    async mounted() {
+    data: ({
+        userPromise: promistate(groupId => fetch(`/api/${groupId}/users`).then(res => res.json()))
+    }),
+    created() {
         this.userPromise.load(this.$route.params.groupId)
     }
 }
@@ -89,8 +80,6 @@ export default {
 ```
 
 ## API
-
-(See below for react hook example)
 
 ```javascript
 import promistate from 'promistate'
@@ -107,7 +96,9 @@ console.log(userPromise.value) // { id: 1, name: '...' }
 
 The callback passed into `promistate` gets executed once you call the "load" method.
 
-Calling "promistate()" immediately returns an object that has the following properties
+Calling "promistate()" immediately returns an object that has the following properties.
+
+(See below for react hook example)
 
 | field | description |
 | ------------- |-- |
@@ -249,6 +240,17 @@ import { usePromistate } from 'promistate/lib/react'
 const [promise, actions] = usePromistate(() => fetch('...'))
 
 actions.setValue(2)
+```
+
+### I need to make a lot of ajax requests, is there something better than regular `fetch`?
+
+Sure, I personally use [fetch-me-json](https://github.com/MZanggl/fetch-me-json).
+
+```javascript
+import promistate from 'promistate'
+import JSONFetch from 'fetch-me-json'
+
+const promise = promistate(() => JSONFetch.get('/api/...'))
 ```
 
 ## Meta
