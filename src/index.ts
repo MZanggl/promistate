@@ -18,6 +18,7 @@ function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result
         ignoreLoadWhenPending = false,
         isEmpty = isEmptyDefaultCheck,
         ignoreStaleLoad = false,
+        onError = (error) => error,
         listen,
     } = options
 
@@ -26,7 +27,7 @@ function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result
         timesSettled: 0,
         _value: defaultValue,
         isPending: false,
-        error: null,
+        error: onError(null),
 
         get value() {
             return this._value
@@ -45,7 +46,7 @@ function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result
         reset() {
             this._value = defaultValue
             this.isPending = false
-            this.error = null
+            this.error = onError(null)
             this.timesSettled = 0
             this.timesInitiated++
             listen && listen()
@@ -59,7 +60,7 @@ function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result
             const timesInitiated = this.timesInitiated + 1
             this.timesInitiated = timesInitiated
             this.isPending = true
-            this.error = null
+            this.error = onError(null)
             listen && listen()
 
             return Promise.resolve(callback.apply(this, args))
@@ -80,7 +81,7 @@ function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result
                     this.timesSettled++
                     this.isPending = false
                     this._value = defaultValue
-                    this.error = error
+                    this.error = onError(error)
                     listen && listen()
                     if (!catchErrors) throw error
                     return Status.ERROR
