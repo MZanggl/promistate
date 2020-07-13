@@ -1,6 +1,6 @@
 {
   "name": "promistate",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Manage promise state easily",
   "main": "index.js",
   "types": "index.d.ts",
