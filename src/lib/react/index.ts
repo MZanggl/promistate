@@ -13,7 +13,16 @@ function extractStyles<T>(state: PromistateResult<T>): PromistateReactState<T> {
   }
 }
 
-export function usePromistate<T>(promise: (...args: any[]) => Promise<T>, options: PromistateOptions<T>) {
+type UsePromistateReturnType<T> = [
+  PromistateReactState<T>,
+  {
+    setValue: (value: T) => void;
+    reset: PromistateResult<T>['reset'];
+    load: PromistateResult<T>['load'];
+  }
+]
+
+export function usePromistate<T>(promise: (...args: any[]) => Promise<T>, options: PromistateOptions<T>): UsePromistateReturnType<T> {
   let setState: React.Dispatch<React.SetStateAction<PromistateReactState<T>>> | undefined;
 
   const promiseRef = useRef(promistate<T>(promise, {
@@ -27,7 +36,7 @@ export function usePromistate<T>(promise: (...args: any[]) => Promise<T>, option
   const [state, setStateCopy] = useState(extractStyles(promiseRef.current))
   setState = setStateCopy
 
-  const load = (...args: any[]) => promiseRef.current.load(args)
+  const load = (...args: any[]) => promiseRef.current.load(...args)
   const reset = () => promiseRef.current.reset()
   const setValue = (value: T) => promiseRef.current.value = value
 
