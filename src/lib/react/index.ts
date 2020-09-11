@@ -17,6 +17,7 @@ type UsePromistateReturnType<T> = [
   PromistateReactState<T>,
   {
     setValue: (value: T) => void;
+    setError: (value: Error | null) => void;
     reset: PromistateResult<T>['reset'];
     load: PromistateResult<T>['load'];
   }
@@ -39,6 +40,7 @@ export function usePromistate<T>(promise: (...args: any[]) => Promise<T>, option
   const load = (...args: any[]) => promiseRef.current.load(...args)
   const reset = () => promiseRef.current.reset()
   const setValue = (value: T) => promiseRef.current.value = value
+  const setError = (error: Error | null) => promiseRef.current.error = error
 
-  return [state, { load, reset, setValue }]
+  return [state, { load, reset, setValue, setError }]
 }

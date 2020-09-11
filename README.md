@@ -242,6 +242,28 @@ const [promise, actions] = usePromistate(() => fetch('...'))
 actions.setValue(2)
 ```
 
+---
+
+The same way you can also set the error programmatically.
+
+```javascript
+import promistate from 'promistate'
+
+const promise = promistate(() => fetch('...'))
+
+promise.error = new Error('internal error')
+```
+
+or with the react hook:
+
+```javascript
+import { usePromistate } from 'promistate/lib/react'
+
+const [promise, actions] = usePromistate(() => fetch('...'))
+
+actions.setError(new Error('internal error'))
+```
+
 ### I need to make a lot of ajax requests, is there something better than regular `fetch`?
 
 Sure, I personally use [fetch-me-json](https://github.com/MZanggl/fetch-me-json).

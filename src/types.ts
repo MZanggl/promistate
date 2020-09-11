@@ -21,9 +21,10 @@ export interface Result<T> {
     timesSettled: number;
     value: T | null;
     _value: T | null;
+    _error: Error | null;
+    error: Error | null;
     isPending: boolean;
     isEmpty: boolean;
-    error: Error | null;
     reset: () => void;
     load: (...args: CallbackArgs) => Promise<Status>;
 }

@@ -230,4 +230,14 @@ test('can register listener when state changes', async assert => {
     
     state.value = 11
     assert.equal(counter, 1)
+
+    state.error = new Error('test')
+    assert.equal(counter, 2)
+})
+
+test('can set error manually', async assert => {
+    const state = promistate(() => 1)
+
+    state.error = new Error('test')
+    assert.equal(state.error.message, 'test')
 })
