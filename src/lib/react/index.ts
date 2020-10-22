@@ -25,7 +25,7 @@ type UsePromistateReturnType<T> = [
   }
 ]
 
-export function usePromistate<T>(promise: (...args: any[]) => Promise<T>, options: PromistateOptions<T>): UsePromistateReturnType<T> {
+export function usePromistate<T>(promise: (...args: any[]) => Promise<T>, options: PromistateOptions<T> = {}): UsePromistateReturnType<T> {
   let setState: React.Dispatch<React.SetStateAction<PromistateReactState<T>>> | undefined;
 
   const promiseRef = useRef(promistate<T>(promise, {
