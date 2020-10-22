@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react'
 import promistate, { PromistateResult, PromistateOptions } from '../..'
 
-export type PromistateReactState<T> = Pick<PromistateResult<T>, 'isEmpty' | 'value' | 'timesSettled' | 'isPending' | 'error'>
+type PromistateResultKeys = 'isEmpty' | 'value' | 'timesSettled' | 'isPending' | 'error' | 'isDelayOver'
+export type PromistateReactState<T> = Pick<PromistateResult<T>, PromistateResultKeys>
 
 function extractStyles<T>(state: PromistateResult<T>): PromistateReactState<T> {
   return {
@@ -9,6 +10,7 @@ function extractStyles<T>(state: PromistateResult<T>): PromistateReactState<T> {
     value: state.value,
     timesSettled: state.timesSettled,
     isPending: state.isPending,
+    isDelayOver: state.isDelayOver,
     error: state.error
   }
 }

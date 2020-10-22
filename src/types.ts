@@ -5,6 +5,7 @@ export interface Options<T> {
     isEmpty?<T>(value: T | null): boolean;
     ignoreStaleLoad?: boolean;
     listen?(): void;
+    delay?: number;
 }
 
 export enum Status {
@@ -24,6 +25,7 @@ export interface Result<T> {
     _error: Error | null;
     error: Error | null;
     isPending: boolean;
+    isDelayOver: boolean;
     isEmpty: boolean;
     reset: () => void;
     load: (...args: CallbackArgs) => Promise<Status>;

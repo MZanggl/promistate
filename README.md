@@ -105,6 +105,7 @@ Calling "promistate()" immediately returns an object that has the following prop
 | load  | A method to call the previously passed in callback. Arguments get propogated to callback |
 | value  | Holds the resolved promise result |
 | isPending  | Defines if promise is currently pending |
+| isDelayOver  | Defines if promise is currently pending and the given delay (see configurations) has elapsed. |
 | timesSettled  | counts how many times a promise was settled. Sometimes you want to wait until a promise was settled |
 | isEmpty  | Defines if there is a result. Conveniently switches to false when promise is pending. isEmpty is true when the result is an empty array, empty object, null or undefined |
 | error | Error object in case promise was rejected |
@@ -155,12 +156,13 @@ promistate(async function callback() {
 
 | key | type | default | use case  |
 | ------------- |-- |:-------------:| -----:|
-| catchErrors  | boolean  | true | You already use something like an ErrorBoundary component for catching errors |
-| defaultValue | any   | null  | You already have a value at hand, or want to default it to an empty array, object, etc. |
-| ignoreStaleLoad | boolean   | false  | If you "load" while there is already a promise pending, this will ignore any stale promise results. By calling "reset" you can also cancel promises this way. |
-| ignoreLoadWhenPending | boolean   | false  | Prevent an event being fired twice e.g. when clicking a button. With this boolean set, while the first promise is still pending, subsequent loads would be ignored (not deferred!). When a subsequent load gets ignored, the "load" method returns the status "IGNORED" |
-| isEmpty | Function  | undefined | Say, the result is `{ page: 1, items: [] }`, the default "isEmpty" would always evaluate to false since a filled object is considered not empty. You can tweak the check like this: `{ isEmpty: value => value.items.length < 1 }` |
-| listen | Function | undefined | Listen to any state changes. Useful for integrations in libraries like Svelte or React.js | 
+| catchErrors  | `boolean`  | true | You already use something like an ErrorBoundary component for catching errors |
+| defaultValue | `any`   | null  | You already have a value at hand, or want to default it to an empty array, object, etc. |
+| ignoreStaleLoad | `boolean`   | false  | If you "load" while there is already a promise pending, this will ignore any stale promise results. By calling "reset" you can also cancel promises this way. |
+| ignoreLoadWhenPending | `boolean`   | false  | Prevent an event being fired twice e.g. when clicking a button. With this boolean set, while the first promise is still pending, subsequent loads would be ignored (not deferred!). When a subsequent load gets ignored, the "load" method returns the status "IGNORED" |
+| delay  | `number`  | 200 | Specifies after how many ms `isDelayOver` will be set to true. This is useful to avoid flashing loading spinners for fast requests. |
+| isEmpty | `Function`  | undefined | Say, the result is `{ page: 1, items: [] }`, the default "isEmpty" would always evaluate to false since a filled object is considered not empty. You can tweak the check like this: `{ isEmpty: value => value.items.length < 1 }` |
+| listen | `Function` | undefined | Listen to any state changes. Useful for integrations in libraries like Svelte or React.js | 
 
 ### usage with React.js
 

@@ -5,7 +5,7 @@
         "target": "ES5",
         "outDir": "./dist",
         "declaration": true,
-        "lib": ["ES2015.Promise", "ES5", "ES2015.Iterable"]
+        "lib": ["ES2015.Promise", "ES5", "ES2015.Iterable", "DOM"]
     },
     "include": [
         "src/**/*"

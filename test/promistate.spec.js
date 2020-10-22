@@ -4,6 +4,7 @@ const { default: promistate, PromistateStatus } = require('../dist/index')
 test('can access default properties', (assert) => {
     const state = promistate(async () => 1)
     assert.isFalse(state.isPending)
+    assert.isFalse(state.isDelayOver)
     assert.isTrue(state.isEmpty)
     assert.isNull(state.value)
     assert.isNull(state.error)
@@ -16,6 +17,7 @@ test('can set value through loading', async (assert) => {
     assert.equal(status, PromistateStatus.RESOLVED)
     assert.equal(state.value, 1)
     assert.isFalse(state.isPending)
+    assert.isFalse(state.isDelayOver)
     assert.isFalse(state.isEmpty)
     assert.isNull(state.error)
 })
@@ -83,6 +85,7 @@ test('catches errors', async (assert) => {
 
     assert.equal(state.error.message, 'blub')
     assert.isFalse(state.isPending)
+    assert.isFalse(state.isDelayOver)
     assert.isTrue(state.isEmpty)
     assert.isNull(state.value)
     assert.equal(status, PromistateStatus.ERROR)
@@ -103,7 +106,7 @@ test('resets value when crashing', async (assert) => {
 })
 
 test('does throw error when option is set to let it bubble up', async (assert) => {
-    assert.plan(5)
+    assert.plan(6)
 
     const state = promistate(async () => {
         throw new Error('blub')
@@ -117,6 +120,7 @@ test('does throw error when option is set to let it bubble up', async (assert) =
 
     assert.equal(state.error.message, 'blub')
     assert.isFalse(state.isPending)
+    assert.isFalse(state.isDelayOver)
     assert.isTrue(state.isEmpty)
     assert.isNull(state.value)
 })
@@ -211,28 +215,38 @@ test('automatically cancels return of promise value when another promise was ini
 })
 
 test('can register listener when state changes', async assert => {
-    let counter = 0
+    let batchedChanges = 0
     const state = promistate(action => action, {
-        listen: () => counter++
+        listen: () => batchedChanges++,
+        delay: 50,
+        ignoreStaleLoad: true
     })
 
     await state.load(() => '')
-    assert.equal(counter, 2)
-    counter = 0
+    assert.equal(batchedChanges, 2)
+    batchedChanges = 0
 
     state.reset()
-    assert.equal(counter, 1)
-    counter = 0
+    assert.equal(batchedChanges, 1)
+    batchedChanges = 0
 
     await state.load(() => { throw new Error('asfd') })
-    assert.equal(counter, 2)
-    counter = 0
+    assert.equal(batchedChanges, 2)
+    batchedChanges = 0
     
     state.value = 11
-    assert.equal(counter, 1)
+    assert.equal(batchedChanges, 1)
+    batchedChanges = 0
 
     state.error = new Error('test')
-    assert.equal(counter, 2)
+    assert.equal(batchedChanges, 1)
+    batchedChanges = 0
+
+    // first isPending=true, then isDelayOver=true (after 50ms), then settling of promise
+    const sleep = ms => new Promise((resolve) => setTimeout(resolve, ms))
+    await state.load(sleep(100))
+    assert.equal(batchedChanges, 3)
+    batchedChanges = 0
 })
 
 test('can set error manually', async assert => {
@@ -240,4 +254,34 @@ test('can set error manually', async assert => {
 
     state.error = new Error('test')
     assert.equal(state.error.message, 'test')
+})
+
+test('sets isDelayOver when value is pending more than set delay time', async (assert) => {
+    assert.plan(3)
+    const state = promistate(() => {
+        return new Promise((resolve) => setTimeout(resolve, 100))
+    }, { delay: 50})
+
+    const promise = state.load()
+    assert.isFalse(state.isDelayOver)
+    setTimeout(() => {
+        assert.isFalse(state.isDelayOver)
+    }, 20)
+
+    setTimeout(() => {
+        assert.isTrue(state.isDelayOver)
+    }, 51)
+
+    return promise
+})
+
+test('immediately sets isDelayOver to true when set delay is 0', async (assert) => {
+    const state = promistate(() => {
+        return new Promise((resolve) => setTimeout(resolve, 30))
+    }, { delay: 0})
+
+    const promise = state.load()
+    assert.isTrue(state.isDelayOver)
+    await promise
+    assert.isFalse(state.isDelayOver)
 })

@@ -19,6 +19,7 @@ function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result
         isEmpty = isEmptyDefaultCheck,
         ignoreStaleLoad = false,
         listen,
+        delay = 200,
     } = options
 
     return {
@@ -26,6 +27,7 @@ function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result
         timesSettled: 0,
         _value: defaultValue,
         isPending: false,
+        isDelayOver: false,
         _error: null,
 
         get value() {
@@ -55,6 +57,7 @@ function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result
         reset() {
             this._value = defaultValue
             this.isPending = false
+            this.isDelayOver = false
             this._error = null
             this.timesSettled = 0
             this.timesInitiated++
@@ -68,27 +71,40 @@ function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result
 
             const timesInitiated = this.timesInitiated + 1
             this.timesInitiated = timesInitiated
+            const shouldIgnore = () => ignoreStaleLoad && this.timesInitiated !== timesInitiated
+            this.isDelayOver = !delay
             this.isPending = true
             this._error = null
             listen && listen()
 
+            if (delay) {
+                setTimeout(() => {
+                    if (this.isPending && !shouldIgnore()) {
+                        this.isDelayOver = true
+                        listen && listen()
+                    }
+                }, delay)
+            }
+
             return Promise.resolve(callback.apply(this, args))
                 .then((result: T) => {
-                    if (ignoreStaleLoad && this.timesInitiated !== timesInitiated) {
+                    if (shouldIgnore()) {
                         return Status.IGNORED
                     }
                     this.timesSettled = this.timesSettled + 1
                     this._value = result
                     this.isPending = false
+                    this.isDelayOver = false
                     listen && listen()
                     return Status.RESOLVED
                 })
                 .catch((error: Error) => {
-                    if (ignoreStaleLoad && this.timesInitiated !== timesInitiated) {
+                    if (shouldIgnore()) {
                         return Status.IGNORED
                     }
                     this.timesSettled++
                     this.isPending = false
+                    this.isDelayOver = false
                     this._value = defaultValue
                     this._error = error
                     listen && listen()
