@@ -26,6 +26,7 @@ function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result
         timesInitiated: 0,
         timesSettled: 0,
         _value: defaultValue,
+        _callback: callback,
         isPending: false,
         isDelayOver: false,
         _error: null,
@@ -86,7 +87,7 @@ function promistate<T>(callback: Callback<T>, options: Options<T> = {}) : Result
                 }, delay)
             }
 
-            return Promise.resolve(callback.apply(this, args))
+            return Promise.resolve(this._callback.apply(this, args))
                 .then((result: T) => {
                     if (shouldIgnore()) {
                         return Status.IGNORED

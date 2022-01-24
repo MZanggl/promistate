@@ -20,6 +20,7 @@ export type CallbackArgs = any[]
 export interface Result<T> {
     timesInitiated: number;
     timesSettled: number;
+    _callback: Callback<T>;
     value: T | null;
     _value: T | null;
     _error: Error | null;

@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import promistate, { PromistateResult, PromistateOptions } from '../..'
+import { Callback } from '../../types'
 
 type PromistateResultKeys = 'isEmpty' | 'value' | 'timesSettled' | 'isPending' | 'error' | 'isDelayOver'
 export type PromistateReactState<T> = Pick<PromistateResult<T>, PromistateResultKeys>
@@ -25,16 +26,20 @@ type UsePromistateReturnType<T> = [
   }
 ]
 
-export function usePromistate<T>(promise: (...args: any[]) => Promise<T>, options: PromistateOptions<T> = {}): UsePromistateReturnType<T> {
+export function usePromistate<T>(callback: Callback<T>, options: PromistateOptions<T> = {}, deps = []): UsePromistateReturnType<T> {
   let setState: React.Dispatch<React.SetStateAction<PromistateReactState<T>>> | undefined;
 
-  const promiseRef = useRef(promistate<T>(promise, {
+  const promiseRef = useRef(promistate<T>(callback, {
     ...options,
     listen() {
       setState && setState(extractStyles<T>(promiseRef.current))
       options.listen && options.listen()
     }
   }))
+
+  useEffect(() => {
+    promiseRef.current._callback = callback
+  }, deps)
 
   const [state, setStateCopy] = useState(extractStyles(promiseRef.current))
   setState = setStateCopy

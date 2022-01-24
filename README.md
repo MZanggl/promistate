@@ -182,6 +182,9 @@ export default function App() {
 }
 ```
 
+You can pass promistate options as the second argument `usePromistate(somePromise, { defaultValue: "" })`,
+and promise depedencies as the third argument `usePromistate(somePromise, { }, [dep1, dep2])`.
+
 ### Typescript
 
 To type the result of the promise you can make use of generics.
